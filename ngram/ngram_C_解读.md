@@ -1,6 +1,6 @@
 LLM101n 是 OpenAI 联合创始人、“计算机视觉教母”李飞飞教授的高徒Andrej Karpathy 推出的“世界上显然最好的 AI 课程”。本文将带领大家对 LLM101n 中 ngram 模块的 C 语言核心代码逐块进行解读。
 
-中文版共建仓库：
+最新教程请见：
 
 [https://github.com/SmartFlowAI/LLM101n-CN/tree/master/ngram](https://github.com/SmartFlowAI/LLM101n-CN/tree/master/ngram)
 
