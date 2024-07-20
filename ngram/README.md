@@ -1,24 +1,34 @@
+最新教程请见：
+
+[https://github.com/SmartFlowAI/LLM101n-CN/tree/master/ngram](https://github.com/SmartFlowAI/LLM101n-CN/tree/master/ngram)
+
+原始代码仓库：
+
+[https://github.com/EurekaLabsAI/ngram](https://github.com/EurekaLabsAI/ngram)
+
+---
+
 # ngram
 
-In this module we build the n-gram Language Model. In the process, we learn a lot of the basics of machine learning (training, evaluation, data splits, hyperparameters, overfitting) and the basics of autoregressive language modeling (tokenization, next token prediction, perplexity, sampling). GPT is "just" a very large n-gram model, too. The only difference is that GPT uses a neural network to calculate the probability of the next token, while n-gram uses a simple count-based approach.
+在本模块中，我们将构建n-gram语言模型。在这个过程中，我们将学习到许多机器学习的基础概念（训练、评估、数据分割、超参数、过拟合）以及自回归语言建模的基础知识（分词、下一个词预测、困惑度、采样）。GPT本质上也是一个非常大的n-gram模型，唯一的区别在于GPT使用神经网络来计算下一个词的概率，而n-gram则使用简单的基于计数的方法。
 
-Our dataset is that of 32,032 names from [ssa.gov](https://www.ssa.gov/oact/babynames/) for the year 2018, which were split into 1,000 names in the test split, 1,000 in val split, and the rest in the training split, all of them inside the `data/` folder. Therefore, our n-gram model will essentially try to learn the statistics of the characters in these names, and then generate new names by sampling from the model.
+我们的数据集来自[ssa.gov](https://www.ssa.gov/oact/babynames/)，包含2018年的32,032个名字，它们被分割成测试集1000个名字，验证集1000个名字，其余的在训练集中，所有这些数据都位于`data/`文件夹中。因此，我们的n-gram模型将尝试学习这些名字中字符的统计特性，然后通过从模型中采样来生成新的名字。
 
-A great reference for this module is [Chapter 3](https://web.stanford.edu/~jurafsky/slp3/3.pdf) of "Speech and Language Processing" by Jurafsky and Martin.
+本模块的一个很好的参考资料是Jurafsky和Martin的《Speech and Language Processing》的[第3章](https://web.stanford.edu/~jurafsky/slp3/3.pdf)。
 
-Currently, the best "build this repo from scratch" reference is the ["The spelled-out intro to language modeling: building makemore"](https://www.youtube.com/watch?v=PaCmpygFfXo) YouTube video, though some of the details have changed around a bit. The major departure is that the video covers a bigram Language Model, which for us is just a special case when `n = 2` for the n-gram.
+目前，最好的“从头构建这个仓库”的参考是YouTube视频["The spelled-out intro to language modeling: building makemore"](https://www.youtube.com/watch?v=PaCmpygFfXo)，尽管一些细节有所变化。主要的区别是，视频涵盖了二元语言模型，对于我们来说，当`n = 2`时，它只是一个特殊情况。
 
-### Python version
+# Python版本
 
-To run the Python code, ensure you have `numpy` installed (e.g. `pip install numpy`), and then run the script:
+要运行Python代码，请确保你已经安装了`numpy`（例如，使用`pip install numpy`），然后运行脚本：
 
 ```bash
 python ngram.py
 ```
 
-You'll see that the script first "trains" a small character-level Tokenizer (the vocab size is 27 for all 26 lowercase English letters and the newline character), then it conducts a small grid search of n-gram models with various hyperparameter settings for the n-gram order `n` and the smoothing factor, using the validation split. With default settings on our data, the values that turn out to be optimal are `n=4, smoothing=0.1`. It then takes this best model, samples 200 characters from it, and finally reports the test loss and perplexity. Here is the full output, it should only take a few seconds to produce:
+你会看到脚本首先“训练”了一个小型的字符级分词器（词汇表大小为27，包括所有26个英文小写字母和换行符），然后对n-gram模型进行了小规模的网格搜索，使用不同的超参数设置n-gram顺序`n`和平滑因子，使用验证分割。使用我们数据的默认设置，最终得出的最佳值是`n=4, smoothing=0.1`。然后，它采用这个最佳模型，从中采样200个字符，并最终报告测试损失和困惑度。这里是完整的输出，它应该只需要几秒钟就能产生：
 
-```
+```bash
 python ngram.py
 seq_len 3 | smoothing 0.03 | train_loss 2.1843 | val_loss 2.2443
 seq_len 3 | smoothing 0.10 | train_loss 2.1870 | val_loss 2.2401
@@ -42,28 +52,30 @@ shir
 esczsvn
 freyanty
 aubren
-... (truncating) ...
+...（截断）...
 test_loss 2.106370, test_perplexity 8.218358
-wrote dev/ngram_probs.npy to disk (for visualization)
+wrote dev/ngram_probs.npy to disk （用于可视化）
 ```
 
-As you can see, the 4-gram model sampled some relatively reasonable names like "felton" and "jasiel", but also some weirder ones like "nebjnvfobzadon", but you can't expect too much from a little 4-gram character-level language model. Finally, the test perplexity is reported at ~8.2, so the model is as confused about every character in the test set as if it was choosing randomly from 8.2 equally likely characters.
+如你所见，4-gram模型采样了一些相对合理的名称，如"felton"和"jasiel"，但也有一些奇怪的名称，如"nebjnvfobzadon"，但你不能对一个小型4-gram字符级语言模型有太多期望。最后，测试困惑度报告为约8.2，这意味着模型对测试集中的每个字符的困惑度就像从8.2个同样可能的字符中随机选择一样。
 
-The Python code also writes out the n-gram probabilities to disk into the `dev/` folder, which you can then inspect with the attached Jupyter notebook [dev/visualize_probs.ipynb](dev/visualize_probs.ipynb).
+Python代码还将n-gram概率写入磁盘到`dev/`文件夹中，然后你可以使用附带的Jupyter笔记本[dev/visualize_probs.ipynb](dev/visualize_probs.ipynb)进行检查。
 
-### C version
+# C版本
 
-The C model is identical in functionality but skips the cross-validation. Instead, it hardcodes `n=4, smoothing=0.01`, but does the training, sampling, and test perplexity evaluation and achieves the exact same results as the Python version. An example of compiling and running the C code is as follows:
+C模型在功能上与Python版本相同，但跳过了交叉验证。相反，它硬编码了`n=4, smoothing=0.01`，但进行了训练、采样和测试困惑度评估，并与Python版本取得了完全相同的结果。编译和运行C代码的示例如下：
 
 ```bash
 clang -O3 -o ngram ngram.c -lm
 ./ngram
 ```
 
-The C version runs, of course, much faster. You'll see the same samples and test perplexity.
+当然，C版本运行得更快。你会看到相同的样本和测试困惑度。
 
-### TODOs
+---
 
-- Make better
-- Make exercises
-- Call for help: nice visualization / webapp that shows and animates the 4-gram language model and how it works.
+# LLM101n-CN 共建共学计划
+
+**LLM101n-CN 共建共学计划**是由机智流联合书生·浦语社区兴趣小组发起 LLM101n 中文版共建共学计划，旨在将顶级的 AI 学习资源带到中文社区。在“机智流”公众号后台回复 “**101n**” 加入 LLM101n-CN 共建共学计划，也期待更多的友好社区合作伙伴加入此计划！也欢迎关注我们的中文版 repo：
+
+[https://github.com/SmartFlowAI/LLM101n-CN](https://github.com/SmartFlowAI/LLM101n-CN)
