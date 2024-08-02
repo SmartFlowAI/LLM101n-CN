@@ -1,10 +1,10 @@
 LLM101n 是 OpenAI 联合创始人、“计算机视觉教母”李飞飞教授的高徒Andrej Karpathy 推出的“世界上显然最好的 AI 课程”。我们邀请「机智流」的社区同学制作了本期针对 LLM101n 中关于如何基于 numpy 实现多层感知机（MLP）的深度解读。我们后续还会更新关于该课程核心代码的解读，欢迎关注。
 
-- 原始代码仓库地址：<https://github.com/EurekaLabsAI/mlp>
-- 完整代码：<https://github.com/EurekaLabsAI/mlp/blob/master/mlp_numpy.py>
-- 中文版共建仓库地址：<https://github.com/SmartFlowAI/LLM101n-CN/tree/master/mlp>
-
----
+<p align="center">
+    <a href="https://github.com/SmartFlowAI/LLM101n-CN/tree/master/mlp">中文版共建仓库</a> |
+    <a href="https://github.com/EurekaLabsAI/mlp/blob/master/mlp_numpy.py">完整代码</a> | 
+    <a href="https://github.com/EurekaLabsAI/mlp">原始代码仓库地址</a>
+</p>
 
 代码目录结构树：
 
@@ -23,7 +23,9 @@ mlp
 
 今天将和大家一起学习 LLM101n 课程中 MLP 部分的 Python 核心代码（numpy 版），即上面👆结构树中的 `mlp_numpy.py`。大家可以使用`git clone`命令克隆好仓库，结合源代码和本解读一起食用更佳哦~
 
-![](https://files.mdnice.com/user/58235/2f36c2b4-abf6-43f2-99e7-f06d8ccb51ef.png)
+<p align="center">
+  <img height="300px" alt="mind map" src="https://github.com/user-attachments/assets/5df3b50a-e609-4510-ae5d-cf0dd23b469f">
+</p>
 
 
 # 1. 前置知识
@@ -36,8 +38,9 @@ mlp
 1.  隐藏节点（Hidden Nodes）：隐藏节点和外部世界没有直接联系（由此得名）。这些节点进行计算，并将信息从输入节点传递到输出节点。隐藏节点总称为「隐藏层」。尽管一个前馈神经网络只有一个输入层和一个输出层，但网络里可以没有隐藏层（如果没有隐藏层，激活函数选择 sigmoid，那么就变成逻辑回归了），也可以有多个隐藏层。
 1.  输出节点（Output Nodes）：输出节点总称为「输出层」，负责计算，并从网络向外部世界传递信息。
 
-
-![](https://files.mdnice.com/user/58235/495b4132-769e-4194-805f-28c617fb4aa2.png)
+<p align="center">
+  <img height="300px" alt="mlp" src="https://github.com/user-attachments/assets/2ef156b1-d70c-459a-ae01-4d320c673be7">
+</p>
 
 
 ## 1.2. 何谓“前馈”
@@ -48,7 +51,9 @@ mlp
 >
 >例如，想象一个简单的前馈神经网络用于图像分类，图像数据作为输入进入网络，经过各层神经元的计算和处理，最终得到关于图像所属类别的输出，在这个过程中，信息不会从输出层或隐藏层反向流回输入层。
 
-![图示三层 MLP 的隐藏层包含 10 个神经元，激活函数为 sigmoid；输出层有 3 个神经元，激活函数为 softmax。本图采用以下 MATLAB 代码生成：net = patternnet; view(net)](https://files.mdnice.com/user/58235/54983b78-7c93-4b02-be3a-462478299743.png)
+<p align="center">
+  <img height="200px" alt="" src="https://github.com/user-attachments/assets/44450c4b-7157-4698-8085-69c6a10a024d">
+</p>
 
 
 以一个三层的 MLP 为例，前向计算公式为：
@@ -57,22 +62,22 @@ $$h = \sigma_1(W_1^Tx+b_{1})$$
 
 $$o = \sigma_2(W_{2}^Th+b_2)$$
 
-其中，$h$为隐藏层，$o$为输出层，$\sigma$为激活函数，加入激活函数可以避免网络退化。常见的激活函数有：Sigmoid，Tanh，ReLU。
+其中， $h$ 为隐藏层， $o$ 为输出层， $\sigma$ 为激活函数，加入激活函数可以避免网络退化。常见的激活函数有：Sigmoid，Tanh，ReLU。
 
   
 
 
 ## 1.3. 何谓“反向传播”
 
-反向传播（Backpropagation）是一种在神经网络中用于计算梯度以优化模型参数的重要算法。在神经网络**训练过程**中，通过前向传播计算输出值 ，并通过与真实值比较计算误差$L$，然后从后向前，逐层计算误差$L$对于每个神经元参数（权重和偏置）的梯度，从而实现所有参数的更新。
+反向传播（Backpropagation）是一种在神经网络中用于计算梯度以优化模型参数的重要算法。在神经网络**训练过程**中，通过前向传播计算输出值 ，并通过与真实值比较计算误差 $L$ ，然后从后向前，逐层计算误差 $L$ 对于每个神经元参数（权重和偏置）的梯度，从而实现所有参数的更新。
 
-以下计算图相对直观地展示了反向传播算法在一个三层 MLP 中的运算过程（从右下往左上逐层计算）。其中，$prod(x,y)$表示$X$与$Y$根据形状做必要的变化，然后相乘。主要原理是链式求导法则，不再赘述。
+以下计算图相对直观地展示了反向传播算法在一个三层 MLP 中的运算过程（从右下往左上逐层计算）。其中， $prod(x,y)$ 表示 $X$ 与 $Y$ 根据形状做必要的变化，然后相乘。主要原理是链式求导法则，不再赘述。
 
-通过这个计算图不难发现，误差$L$相对于每层参数的梯度之间是存在规律的，这也将极大便利代码的书写。值得注意的是，由于偏置的偏导$\frac{\partial y_i}{\partial b_i}$为 1，因此更新偏置会相对容易一些。
+通过这个计算图不难发现，误差 $L$ 相对于每层参数的梯度之间是存在规律的，这也将极大便利代码的书写。值得注意的是，由于偏置的偏导 $\frac{\partial y_i}{\partial b_i}$ 为 1，因此更新偏置会相对容易一些。
 
-![MLP 反向传播算法的计算图](https://files.mdnice.com/user/58235/e24cc16a-32fd-46d1-bcba-f2fbeafd6419.png)
+![MLP 反向传播算法的计算图](https://github.com/user-attachments/assets/3086eec3-ef66-445a-b595-89ff68f067e4)
 
-在上面的计算图中，激活函数是任意的。特别地，当激活函数均为$y=f(x)$时，每个参数的梯度计算公式如下：
+在上面的计算图中，激活函数是任意的。特别地，当激活函数均为 $y=f(x)$ 时，每个参数的梯度计算公式如下：
 
 $$\frac{\partial L}{\partial W_2} = prod(\frac{\partial L}{\partial y_2} , h) = prod(\frac{\partial L}{\partial y_2} , y_1)$$
 
@@ -100,7 +105,7 @@ $$\frac{\partial L}{\partial b_1} = \frac{\partial L}{\partial y_1}= prod(\frac{
 
 关于 `RNG` 模块的详细解读已在往期内容[《LLM101n 硬核代码解读：手把手教你用PyTorch实现多层感知机MLP》](https://mp.weixin.qq.com/s?__biz=Mzg2NzU4MDgzMA==&mid=2247513832&idx=1&sn=3256d307b18818e6236ef54a7c5c6331&chksm=cebb9819f9cc110f54777da8a237700d2e6542cef0196320ae9a42c3b915209d275c3b83503c&token=102663897&lang=zh_CN#rd)中，这里不再赘述。关于 `StepTimer` 模块的模块还烦请自行查阅。
 
-![common.py 文件的 UML 类图（含父类）](https://files.mdnice.com/user/58235/5e8eec86-d1e7-4d0b-8754-fce18affa029.png)
+![image](https://github.com/user-attachments/assets/614295a8-c59b-41f5-ae92-b4d8190eb406)
 
 # 3. 代码解读
 
@@ -173,11 +178,11 @@ class MLP:
 >
 >到这一步，关键就是如何设置方差 $\sigma^2$。我们知道要高效地训练神经网络，给参数选取一个合适的随机初始化区间是非常重要的。因此为了缓解梯度消失或爆炸问题，我们应尽可能**保持每个神经元的输入和输出的方差一致**。
 >
->假设在我们的 MLP 中，第二个全连接层，即上述代码中的`self.fc2`里，有一个神经元 $a^{(2)}$，其接收前一层的 $M$ 个神经元的输出 $a_i^{(1)}$，$1\leqslant i\leqslant M$，则有：
+>假设在我们的 MLP 中，第二个全连接层，即上述代码中的`self.fc2`里，有一个神经元 $a^{(2)}$，其接收前一层的 $M$ 个神经元的输出 $a_i^{(1)}$ ， $1\leqslant i\leqslant M$ ，则有：
 >
 >$$a^{(2)}=f(\sum_{i=1}^{M}w_{i}^{(1)}a_{i}^{(1)}+b_{i}^{(1)})$$
 >
->其中，$f$ 是激活函数，$w$ 是权重，$b$ 是偏置。为简单起见，这里令 $f(x)=x$，$w_{i}^{(1)}$ 和 $a_{i}^{(1)}$ 相互独立。计算 $a^{(2)}$ 的方差：
+>其中， $f$ 是激活函数， $w$ 是权重， $b$ 是偏置。为简单起见，这里令 $f(x)=x$ ， $w_{i}^{(1)}$ 和 $a_{i}^{(1)}$ 相互独立。计算 $a^{(2)}$ 的方差：
 >
 >$$\begin{align}var(a^{(2)})&=var(\sum_{i=1}^{M}w_{i}^{(1)}a_{i}^{(1)}+b_{i}^{(1)})\\&=\sum_{i=1}^{M}var(w_{i}^{(1)})var(a_{i}^{(1)})\\&=Mvar(w_{i}^{(1)})var(a_{i}^{(1)})\end{align}$$
 >
@@ -193,7 +198,7 @@ class MLP:
 >
 >$$\begin{align}r=\frac{1}{\sqrt{M}}\end{align}$$
 >
->回到源代码里，从第 14 行我们可以知道第二个全连接层的**输入维度**是 $h$，所以用 $\frac{1}{\sqrt{h}}$ 作为它初始化时的 scale。同理，$\frac{1}{\sqrt{e*t}}$ 是第一个全连接层初始化时的 scale，因为它的输入维度是 $e*t$。
+>回到源代码里，从第 14 行我们可以知道第二个全连接层的**输入维度**是 $h$ ，所以用 $\frac{1}{\sqrt{h}}$ 作为它初始化时的 scale。同理， $\frac{1}{\sqrt{e\*t}}$ 是第一个全连接层初始化时的 scale，因为它的输入维度是 $e*t$ 。
 
 ### 3.2.2. 前向传播
 
@@ -248,23 +253,23 @@ def forward(self, idx, targets=None):
 
 以上代码中的 `if targets is not None`语句块即计算**交叉熵损失** (cross-entropy loss)。这里解释一下模型输出损失值的原理，为了方便学习，**下面讲解里的部分变量会与代码中相对应**。
 
-交叉熵损失函数对于**某一样本** $i$，它的数学形式如下：
+交叉熵损失函数对于**某一样本** $i$ ，它的数学形式如下：
 
 $$\begin{align}H_i(p,q)=-\sum_{k}p_klog(q_k)\end{align}$$
 
-$p_k$ 为真实值，$q_k$ 为预测概率值，$k$ 表示样本里第 $k$ 个预测类别。$p_k$ 是已知的，就是代码里的`targets`变量，其存储着每一个样本的标签，剩下要求的就是每一个类别的预测值$q_k$。目前我们只有模型的输出`logits`，但这不是样本中每一个类别的概率，所以为了求样本的概率分布，作者使用了 $Softmax$ 函数：
+ $p_k$ 为真实值， $q_k$ 为预测概率值， $k$ 表示样本里第 $k$ 个预测类别。 $p_k$ 是已知的，就是代码里的`targets`变量，其存储着每一个样本的标签，剩下要求的就是每一个类别的预测值 $q_k$ 。目前我们只有模型的输出`logits`，但这不是样本中每一个类别的概率，所以为了求样本的概率分布，作者使用了 $Softmax$ 函数：
 
 $$\begin{align}probs_{i,k}=\frac{exp(logits_{i,k})}{\sum_{k}exp(logits_{i,k})}\end{align}$$
 
-![](https://files.mdnice.com/user/58235/b094ce54-dbc4-48e2-b72b-42a11570f7fb.png)
+![image](https://github.com/user-attachments/assets/5af16c22-451c-4fc7-a4b3-4f471b32b4c9)
 
-式(10)是 $Softmax$ 函数的标准形式，$probs_{i,k}$ 是第 $i$ 个样本预测第 $k $ 个类别的概率值。但是我们注意到代码里还计算了`logits_max`（第23行），即每一个样本最大的输出值，并被所有的原输出减去。这么做是为了处理**数值上下溢**的情况，如果式(10)中的 $logits_{i,k}$ 过大，则分子过大，产生 $nan$；相反 $logits_{i,k}$ 如果过小，$exp(logits_{i,k})$ 趋向于 0，导致分母趋向 0，出现除 0 错误，产生下溢。减去最大值后：
+式(10)是 $Softmax$ 函数的标准形式， $probs_{i,k}$ 是第 $i$ 个样本预测第 $k$ 个类别的概率值。但是我们注意到代码里还计算了`logits_max`（第23行），即每一个样本最大的输出值，并被所有的原输出减去。这么做是为了处理**数值上下溢**的情况，如果式(10)中的 $logits_{i,k}$ 过大，则分子过大，产生 $nan$ ；相反 $logits_{i,k}$ 如果过小， $exp(logits_{i,k})$ 趋向于 0，导致分母趋向 0，出现除 0 错误，产生下溢。减去最大值后：
 
 $$\begin{align}probs_{i,k}=\frac{exp(logits_{i,k}-logits\_max_{{i}})}{\sum_{j}exp(logits_{i,j}-logits\_max_{{i}})}\end{align}$$
 
 如此，由于指数 0 的存在，分子最大为 1，不会出现上溢；同时分母最小不会小于 1，也不会出现下溢了。式(11)才是作者真正使用的 $Softmax$ 函数形式。
 
-计算得到概率分布`probs`后，从中取出每一样本**标签**对应的概率`probs_targets`，然后求负对数得`nlls`，该变量里的每一个元素 $nlls_i$ 就是式(9)中的 $H_i(p,q)$。你一定会奇怪，这个计算过程和式(9)不太一样啊？这是因为在分类问题里，标签一般用独热编码表示，比如 $[0,0,1,0]$ 代表类别为 2 的标签（下标从 0 开始）。这份代码的`targest`变量里同样也存储着每一个样本对应的标签在词汇表里的下标，这与独热编码的含义一样，前文的 $[0,0,1,0]$ 在`targest`变量下则表示为 $targets_i=2$。回到式(9)，除了 $k=targets_i$ 时，$p_k=1$ 以外，其余的 $p_k$ 都为 0，所以式(9)简化为：
+计算得到概率分布`probs`后，从中取出每一样本**标签**对应的概率`probs_targets`，然后求负对数得`nlls`，该变量里的每一个元素 $nlls_i$ 就是式(9)中的 $H_i(p,q)$ 。你一定会奇怪，这个计算过程和式(9)不太一样啊？这是因为在分类问题里，标签一般用独热编码表示，比如 $[0,0,1,0]$ 代表类别为 2 的标签（下标从 0 开始）。这份代码的`targest`变量里同样也存储着每一个样本对应的标签在词汇表里的下标，这与独热编码的含义一样，前文的 $[0,0,1,0]$ 在`targest`变量下则表示为 $targets_i=2$ 。回到式(9)，除了 $k=targets_i$ 时， $p_k=1$ 以外，其余的 $p_k$ 都为 0，所以式(9)简化为：
 
 $$\begin{align}H_i(p,q)=-p_klog(q_k)=-log(q_k)，k=targets_i\end{align}$$
 
@@ -278,7 +283,7 @@ $$\begin{align}H_i(p,q)=-p_klog(q_k)=-log(q_k)，k=targets_i\end{align}$$
 
 在本文中的3层MLP中，需要更新的参数主要为：`fc1_weights`, `fc1_bias`, `fc2_weights`, `fc2_bias`, `wte`，即 2 个权重矩阵和偏置，加上每个 token 的向量表示。
 
-前文提到，损失函数使用的是交叉熵损失。对于每个样本 $i$，交叉熵损失的梯度可以表示为：
+前文提到，损失函数使用的是交叉熵损失。对于每个样本 $i$ ，交叉熵损失的梯度可以表示为：
 
 $$\frac{∂L}{∂z_{ik}}=q_{ik}−p_{ik}$$
 
@@ -288,7 +293,7 @@ $$\frac{∂L}{∂z_{ik}}=\begin{cases} q_{ik}-1 & \text{ if } p_{ik}=1 \\ q_{ik}
 
 了解了交叉熵损失的梯度后，再结合【1.3】节中的计算图，就能很好地理解下面的代码了。
 
-![【1.3】节中的反向传播算法计算图](https://files.mdnice.com/user/58235/e24cc16a-32fd-46d1-bcba-f2fbeafd6419.png)
+![image](https://github.com/user-attachments/assets/c4e84bb8-baf0-4b72-a324-cddaa2eb02b9)
 
 ```python
 def backward(self):
@@ -337,7 +342,7 @@ def backward(self):
 
 >**Question：** 代码第 16 行，为什么要将梯度平均分配到每个样本上？
 >
->**Answer：** 在 3.2.2 前向传播里，作者最后计算了平均损失作为整个批次的损失，然后是以这整个批次的损失去求相对于模型各参数的梯度，所以梯度公式前的 $\frac{1}{N}$ 符号还在，即 $N=len(targets)$。
+>**Answer：** 在 3.2.2 前向传播里，作者最后计算了平均损失作为整个批次的损失，然后是以这整个批次的损失去求相对于模型各参数的梯度，所以梯度公式前的 $\frac{1}{N}$ 符号还在，即 $N=len(targets)$ 。
 
 ### 3.2.4. 其他方法
 
@@ -353,7 +358,7 @@ $$\begin{align}m_k=beta_1m_{k-1}+(1-beta_1)grads_k\\v_k=beta_2v_{k-1}+(1-beta_2)
 
 其中 $beta_1$ 和 $beta_2$ 分别为两个移动平均的衰减率，根据论文取值为 0.9 与 0.999。同时我们可以把 $m_k$ 和 $v_k$分别看作梯度的均值（一阶矩）和未减去均值的方差（二阶矩）。
 
-假设 $m_0=0,v_0=0$，那么在迭代初期 $m_k$ 和 $v_k$ 的值会比真实的均值和方差要。特别是当 $beta_1$ 和 $beta_2$ 都接近于 1 时，偏差会很大，因此，需要对其进行修正：
+假设 $m_0=0,v_0=0$ ，那么在迭代初期 $m_k$ 和 $v_k$ 的值会比真实的均值和方差要。特别是当 $beta_1$ 和 $beta_2$ 都接近于 1 时，偏差会很大，因此，需要对其进行修正：
 
 $$\begin{align}m\_hat = \frac{m_k}{1-beta_1^t}\\v\_hat = \frac{v_k}{1-beta_2^t}\end{align}$$
 
@@ -361,7 +366,7 @@ $$\begin{align}m\_hat = \frac{m_k}{1-beta_1^t}\\v\_hat = \frac{v_k}{1-beta_2^t}\
 
 $$\begin{align}params_k=params_{k-1}-lr(\frac{m\_hat}{\sqrt{v\_hat}+eps}+weight\_decay*params_{k-1})\end{align}$$
 
-其中$lr$ 是学习率，后面会提到它是动态调整的；$eps$ 是为了保持数值稳定性而设置的非常小的常数，根据论文取值为 1e-8；$weight\_decay$ 是权重衰减项，作者初始化为 1e-4。
+其中 $lr$ 是学习率，后面会提到它是动态调整的； $eps$ 是为了保持数值稳定性而设置的非常小的常数，根据论文取值为 1e-8； $weight\_decay$ 是权重衰减项，作者初始化为 1e-4。
 
 ```python
 class AdamW:
@@ -554,7 +559,7 @@ for step in range(num_steps):
 
 运行代码，我们能够看到代码在终端输出的训练过程如下：
 
-![](https://files.mdnice.com/user/58235/732052cc-a882-475a-ad2b-63f47bda4700.png)
+![image](https://github.com/user-attachments/assets/0f2ad4ae-d48b-499f-88b2-3b01c02802d4)
 
 ### 3.7.6. 模型推理与评估
 
@@ -584,13 +589,18 @@ print(f'test_loss {test_loss:.6f}')
 
 给出代码最终的输出，图片里只给出了模型部分的生成结果还有测试集的损失评估结果。
 
-![](https://files.mdnice.com/user/58235/233843fa-88cd-4be6-8f20-6b60266e6d0a.png)
+![image](https://github.com/user-attachments/assets/f5a0f354-5763-4f0b-a7e8-3d999df3e7fb)
 
 当然，换行符 `\n` 也是模型会预测的一种字符，所以我们能够看到输出的字符并不是在同一行。
 
----
+# LLM101n-CN 共建共学计划
 
-**LLM101n-CN 共建共学计划**是由机智流联合书生·浦语社区兴趣小组发起 LLM101n 中文版共建共学计划，旨在将顶级的 AI 学习资源带到中文社区。在公众号后台回复 “101n” 加入 LLM101n-CN 共建共学计划，也期待更多的友好社区合作伙伴加入此计划！也欢迎关注中文版 repo：
+LLM101n-CN 共建共学计划是由机智流联合书生·浦语社区兴趣小组发起 LLM101n 中文版共建共学计划，旨在将顶级的 AI 学习资源带到中文社区。在公众号后台回复 “**101n**” 加入 LLM101n-CN 共建共学计划，也期待更多的友好社区合作伙伴加入此计划！也欢迎关注中文版 repo：
 
 <https://github.com/SmartFlowAI/LLM101n-CN>
+
+<p align="center">
+  <img width="500" alt="" src="https://github.com/user-attachments/assets/9c9d164c-443d-4d13-9e10-798a7c3ac571">
+</p>
+
 
