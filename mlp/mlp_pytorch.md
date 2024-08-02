@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/d04da33b-451f-4125-bde6-92418ad6374c)
+
 >作者：格陵兰岛的虎
 >
 >引言：欢迎加入 OpenAI 联合创始人硬核推出的 LLM101n 课程的中文版共建共学计划！本期重磅推出针对 mlp 模块的 pytorch 版实现代码的深度解读
