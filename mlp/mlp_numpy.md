@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/d04da33b-451f-4125-bde6-92418ad6374c)
+
 LLM101n 是 OpenAI 联合创始人、“计算机视觉教母”李飞飞教授的高徒Andrej Karpathy 推出的“世界上显然最好的 AI 课程”。我们邀请「机智流」的社区同学制作了本期针对 LLM101n 中关于如何基于 numpy 实现多层感知机（MLP）的深度解读。我们后续还会更新关于该课程核心代码的解读，欢迎关注。
 
 <p align="center">
