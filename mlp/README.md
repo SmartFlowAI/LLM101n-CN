@@ -30,10 +30,9 @@ TODOs：
 
 代码结构（mlp_pytorch.py）：
 
-![MLP 核心代码的 UML 类图](https://files.mdnice.com/user/58235/e4df5e10-e555-435e-920d-58fa94a3da52.png)
+![MLP 核心代码的 UML 类图](https://github.com/user-attachments/assets/f7c2c516-0fda-4169-8bd0-aa3e55e2f9e1)
 
-
-![训练与验证本课程所设计 MLP 的损失函数](https://files.mdnice.com/user/58235/49c0bdbe-5d65-4e31-89bb-2e5173bf821a.png)
+![训练与验证本课程所设计 MLP 的损失函数](https://github.com/user-attachments/assets/4cd2a520-7c8e-4010-8cf8-6222abcbbc90)
 
 # LLM101n-CN 共建共学计划
 
