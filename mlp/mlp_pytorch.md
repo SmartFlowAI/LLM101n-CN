@@ -292,11 +292,10 @@ A：定义 reinit() 函数的主要原因是为了使用自定义的随机数生
 
 我们可以使用 torchinfo 和 torchviz 第三方库来打印模型的结构等相关信息以及可视化计算图，如下所示~
 
-![MLP 模型结构图](https://github.com/user-attachments/assets/44a9a00d-5608-431f-be28-6b6ff085c307)
-
-
-![MLP 模型计算图](https://github.com/user-attachments/assets/82c31333-7a46-40d6-b39c-8a86b8616379)
-
+<div style="display: flex; align-items: center;">
+  <img src="https://github.com/user-attachments/assets/44a9a00d-5608-431f-be28-6b6ff085c3079" style="height: 350px; margin-right: 10px;">
+  <img src="https://github.com/user-attachments/assets/82c31333-7a46-40d6-b39c-8a86b8616379" style="height: 350px; margin-right: 10px;">
+</div>
 
 
 # 模型训练
