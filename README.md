@@ -1,4 +1,9 @@
 # LLM101n: 构建故事讲述者
+
+!!!注意：目前该课程还不存在。目前正在由 [Eureka Labs](https://eurekalabs.ai/) 开发中!!!
+
+---
+
 ![LLM101n header image](llm101n.jpg)
 
 >  我不能创造的，就是我不能理解的 --理查德费曼
@@ -9,23 +14,23 @@
 
 **Syllabus**
 
-- [Chapter 01](bigram/README.md) **Bigram Language Model** (language modeling)
-- [Chapter 02](micrograd/README.md) Micrograd 机器学习，反向传播
-- [Chapter 03](mlp/README.md) N-gram模型(多层感知机、matmul、gelu)
-- [Chapter 04](attention/README.md) 注意力机制(注意力机制、softmax、位置编码器)
-- [Chapter 05](transformer/README.md) Transformer (Transformer，残差，layernorm, GPT-2)
-- [Chapter 06](tokenization/README.md) Tokenization (minBPE，字节对编码)
-- [Chapter 07](optimization/README.md) Optimization (initialization, optimization, AdamW)
-- [Chapter 08](device/README.md) Need for Speed I (设备、CPU、GPU)
-- [Chapter 09](precision/README.md) **Need for Speed II: Precision** (mixed precision training, fp16, bf16, fp8, ...)
-- [Chapter 10](distributed/README.md) **Need for Speed III: Distributed** (distributed optimization, DDP, ZeRO)
-- [Chapter 11](datasets/README.md) 数据集(数据集、数据加载、合成数据生成)
-- [Chapter 12](inference/README.md) 模型推理一:kv-cache (kv-cache)
-- [Chapter 13](quantization/README.md) 模型推理二:量化(量化)
-- [Chapter 14](sft/README.md) 微调一: SFT (supervised finetuning SFT, PEFT, LoRA, chat)
-- [Chapter 15](rl/README.md) 微调二: RL (reinforcement learning, RLHF, PPO, DPO)
-- [Chapter 16](deployment/README.md) 部署 (API, Web 应用)
-- [Chapter 17](multimodal/README.md) 多模态 (VQVAE, diffusion transformer)
+- Chapter 01 Bigram 语言模型（语言建模）
+- [Chapter 02](micrograd/README.md) Micrograd（机器学习，反向传播）
+- [Chapter 03](ngram/README.md) N-gram模型（多层感知器，matmul，gelu）
+- Chapter 04 注意力机制（注意力机制、softmax、位置编码器）
+- Chapter 05 Transformer (Transformer，残差，layernorm, GPT-2)
+- Chapter 06 词嵌入模型 (minBPE，字节对编码)
+- Chapter 07 优化器 (initialization, optimization, AdamW)
+- Chapter 08 Need for Speed I: 设备 (设备、CPU、GPU)
+- Chapter 09 Need for Speed II: 精度 (mixed precision training, fp16, bf16, fp8, ...)
+- Chapter 10 Need for Speed III: 分布式 (distributed optimization, DDP, ZeRO)
+- Chapter 11 数据集(数据集、数据加载、合成数据生成)
+- Chapter 12 模型推理一:kv-cache (kv-cache)
+- Chapter 13 模型推理二:量化(量化)
+- Chapter 14 微调一: SFT (supervised finetuning SFT, PEFT, LoRA, chat)
+- Chapter 15 微调二: RL (reinforcement learning, RLHF, PPO, DPO)
+- Chapter 16 部署 (API, Web 应用)
+- Chapter 17 多模态 (VQVAE, diffusion transformer)
 
 
 
@@ -36,16 +41,17 @@
 
 - 编程语言:汇编、C、Python  
 - 数据类型:整数、浮点数、字符串(ASCII、Unicode、UTF-8)  
-- Tensor: shapes, views, strides, contiguous  
+- 张量: shapes, views, strides, contiguous  
 - 深度学习框架:PyTorch, JAX  
 - 神经网络架构:GPT (1,2,3,4)， Llama (RoPE, RMSNorm, GQA)， MoE  
 - 多模态:图像，音频，视频，VQVAE, VQGAN，扩散  
 
----
+# LLM101n-CN 共建共学计划
+
+**LLM101n-CN 共建共学计划**是由机智流联合书生·浦语社区兴趣小组发起 LLM101n 中文版共建共学计划，旨在将顶级的 AI 学习资源带到中文社区。在“机智流”公众号后台回复 “**101n**” 加入 LLM101n-CN 共建共学计划，也期待更多的友好社区合作伙伴加入此计划！也欢迎关注我们的中文版 repo：
+
+[https://github.com/SmartFlowAI/LLM101n-CN](https://github.com/SmartFlowAI/LLM101n-CN)
 
 <p align="center">
   <img width="400" alt="post" src="https://github.com/user-attachments/assets/689f09e4-dbe4-47eb-b82f-599dc5eb0ab1">
 </p>
-
-
-**Update June 25.** To clarify, the course will take some time to build. There is no specific timeline. Thank you for your interest but please do not submit Issues/PRs.
