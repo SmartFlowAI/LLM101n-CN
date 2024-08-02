@@ -1,22 +1,14 @@
-作者：格陵兰岛的虎
-
-引言：欢迎加入 OpenAI 联合创始人硬核推出的 LLM101n 课程的中文版共建共学计划！本期重磅推出针对 mlp 模块的 pytorch 版实现代码的深度解读
+>作者：格陵兰岛的虎
+>
+>引言：欢迎加入 OpenAI 联合创始人硬核推出的 LLM101n 课程的中文版共建共学计划！本期重磅推出针对 mlp 模块的 pytorch 版实现代码的深度解读
 
 LLM101n 是 OpenAI 联合创始人、“计算机视觉教母”李飞飞教授的高徒Andrej Karpathy 推出的“世界上显然最好的 AI 课程”。我们邀请了「机智流」的社区同学，并制作了本期针对 LLM101n 中关于如何基于 pytorch 实现多层感知机（MLP）的深度解读。我们后续还会更新关于该课程核心代码的解读，欢迎关注。
 
-中文版共建仓库：
-
-https://github.com/SmartFlowAI/LLM101n-CN
-
-完整代码：
-
-https://github.com/EurekaLabsAI/mlp/blob/master/mlp_pytorch.py
-
-LLM101n 原始仓库：
-
-https://github.com/EurekaLabsAI
-
----
+<p align="center">
+    <a href="https://github.com/SmartFlowAI/LLM101n-CN">中文版共建仓库</a> |
+    <a href="https://github.com/EurekaLabsAI/mlp/blob/master/mlp_pytorch.py">完整代码</a> | 
+    <a href="https://github.com/EurekaLabsAI/mlp">LLM101n 原始仓库</a>
+</p>
 
 代码目录结构树：
 
@@ -43,10 +35,7 @@ mlp
 
 如代码整体框架图所示，代码可以拆解为以下几个主要模块：
 
-
-
-![](https://files.mdnice.com/user/58235/9422ccd2-a724-4272-b7fd-a4d9f89dad11.PNG)
-
+![代码整体框架图](https://github.com/user-attachments/assets/cd4012e2-2e31-4085-8654-93fd77f8f483)
 
 -   dataloader 模块：为模型的训练、验证和测试加载数据。
 -   模型定义模块：定义 MLP 模型，包括了使用`nn.Module`和 不使用`nn.Module`两种模型版本。在该模块下，使用了自定义的 RNG 随机数模块来进行模型参数的初始化。
@@ -303,10 +292,11 @@ A：定义 reinit() 函数的主要原因是为了使用自定义的随机数生
 
 我们可以使用 torchinfo 和 torchviz 第三方库来打印模型的结构等相关信息以及可视化计算图，如下所示~
 
+![MLP 模型结构图](https://github.com/user-attachments/assets/44a9a00d-5608-431f-be28-6b6ff085c307)
 
-![](https://files.mdnice.com/user/58235/ae2ca264-8f4f-4606-aa31-bc9594882be4.png)
 
-![](https://files.mdnice.com/user/58235/463f8374-39be-4c03-a24d-66c2357ba1f3.png)
+![MLP 模型计算图](https://github.com/user-attachments/assets/82c31333-7a46-40d6-b39c-8a86b8616379)
+
 
 
 # 模型训练
@@ -487,18 +477,20 @@ GPU：10% A100
 
 1.  **MLPRaw**
 
-
-![](https://files.mdnice.com/user/58235/3c5a7b4b-4fcb-4517-a99e-288c4f69cd89.png)
+<div style="display: flex; align-items: center;">
+  <img src="https://github.com/user-attachments/assets/dea8a55a-c7b7-456c-a8df-29b1cb731195" style="height: 300px; margin-right: 10px;">
+  <img src="https://github.com/user-attachments/assets/08763011-c3e4-439b-a995-c80e8ec5e600" style="height: 300px; margin-right: 10px;">
+</div>
 
 
 2.  **MLP**
 
-
-![](https://files.mdnice.com/user/58235/2f9e36c2-ef0b-4323-8813-7e30804cbdd7.png)
-
+<div style="display: flex; align-items: center;">
+  <img src="https://github.com/user-attachments/assets/e075ad18-7034-4e26-a701-c6d253563cb9" style="height: 300px; margin-right: 10px;">
+  <img src="https://github.com/user-attachments/assets/b526b676-81f3-4ec3-8124-7efd30901c46" style="height: 300px; margin-right: 10px;">
+</div>
 
 对比上面的运行结果，我们可以发现一些有趣的地方：
-
 -   使用 nn.module 比不使用 nn.module 构建的模型在相同配置下训练时间更短。nn.Module 是 PyTorch 提供的用于构建神经网络的基本单元，我们使用 nn.Module 可以充分利用 PyTorch 的优化和加速机制。
 -   由于使用了自定义的 RNG 随机数模块进行了随机数的控制和参数权重的初始化，所以两种模型在每次评估时得到的损失总是一致的。
 
@@ -508,9 +500,13 @@ GPU：10% A100
 
 文章有点长，干货也有点多，感谢爱学习的大家读到最后~
 
----
+# LLM101n-CN 共建共学计划
 
-**LLM101n-CN 共建共学计划**是由机智流联合书生·浦语社区兴趣小组发起 LLM101n 中文版共建共学计划，旨在将顶级的 AI 学习资源带到中文社区。在公众号后台回复 “101n” 加入 LLM101n-CN 共建共学计划，也期待更多的友好社区合作伙伴加入此计划！也欢迎关注中文版 repo：
+**LLM101n-CN 共建共学计划**是由机智流联合书生·浦语社区兴趣小组发起 LLM101n 中文版共建共学计划，旨在将顶级的 AI 学习资源带到中文社区。在“机智流”公众号后台回复 “**101n**” 加入 LLM101n-CN 共建共学计划，也期待更多的友好社区合作伙伴加入此计划！也欢迎关注我们的中文版 repo：
 
-<https://github.com/SmartFlowAI/LLM101n-CN>
+[https://github.com/SmartFlowAI/LLM101n-CN](https://github.com/SmartFlowAI/LLM101n-CN)
+
+<p align="center">
+  <img width="400" alt="post" src="https://github.com/user-attachments/assets/689f09e4-dbe4-47eb-b82f-599dc5eb0ab1">
+</p>
 
