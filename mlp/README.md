@@ -1,6 +1,12 @@
+![image](https://github.com/user-attachments/assets/d04da33b-451f-4125-bde6-92418ad6374c)
+
 LLM101n 是 OpenAI 联合创始人、“计算机视觉教母”李飞飞教授的高徒Andrej Karpathy 推出的“世界上显然最好的 AI 课程”。我们在课程更新后的第一时间着手翻译了其中 mlp 模块的序言。该课程仅用 145 行代码教会我们通过训练一个多层感知器（MLP）来构建一个 n-gram 语言模型。我们后续还会更新关于该课程核心代码的解读，欢迎关注。
 
-- 原始课程地址：[https://github.com/EurekaLabsAI/mlp](https://github.com/EurekaLabsAI/mlp)
+<p align="center">
+    <a href="https://github.com/SmartFlowAI/LLM101n-CN">中文版共建仓库</a> |
+    <a href="https://github.com/EurekaLabsAI/mlp/blob/master/README.md">英文版原文件</a> | 
+    <a href="https://github.com/EurekaLabsAI/mlp">LLM101n 原始仓库</a>
+</p>
 
 # 译
 
