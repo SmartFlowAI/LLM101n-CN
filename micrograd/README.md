@@ -32,3 +32,13 @@
 -   用于交互式演示的Streamlit应用，包括原始micrograd仓库的精彩内容：显示计算图
 -   在PyTorch中实现的并行代码`pytorch_reference.py`，输出与micrograd.py完全相同的结果
 -   在C语言中的并行实现，输出相同的结果
+
+# LLM101n-CN 共建共学计划
+
+LLM101n-CN 共建共学计划是由机智流联合书生·浦语社区兴趣小组发起 LLM101n 中文版共建共学计划，旨在将顶级的 AI 学习资源带到中文社区。在公众号后台回复 “**101n**” 加入 LLM101n-CN 共建共学计划，也期待更多的友好社区合作伙伴加入此计划！也欢迎关注中文版 repo：
+
+<https://github.com/SmartFlowAI/LLM101n-CN>
+
+<p align="center">
+  <img width="500" alt="" src="https://github.com/user-attachments/assets/9c9d164c-443d-4d13-9e10-798a7c3ac571">
+</p>

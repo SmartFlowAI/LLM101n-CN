@@ -41,5 +41,5 @@ LLM101n-CN 共建共学计划是由机智流联合书生·浦语社区兴趣小�
 <https://github.com/SmartFlowAI/LLM101n-CN>
 
 <p align="center">
-  <img width="400" alt="post" src="https://github.com/user-attachments/assets/689f09e4-dbe4-47eb-b82f-599dc5eb0ab1">
+  <img width="500" alt="" src="https://github.com/user-attachments/assets/9c9d164c-443d-4d13-9e10-798a7c3ac571">
 </p>
