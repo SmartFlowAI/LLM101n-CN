@@ -10,27 +10,32 @@
 #include "math.h"
 #include <ctime>
 #include <random>
+#include <memory>
 
 class RNG {
-// private:
-//     uint64_t state;
-public:
-    RNG(uint64_t seed) : state(seed) {}
-    std::default_random_engine e;
-
-    float uniform(float a = 0.0f, float b = 1.0f) {
-        std::uniform_real_distribution<float> rand(a, b);
-        e.seed(time(0));
-        // 使用默认的随机设备创建种子
-        std::random_device rd;
-
-        // 使用种子初始化梅森旋转引擎
-        std::mt19937 mt(rd());
-        return rand(mt);
-    }
-
 private:
     uint64_t state;
+
+public:
+    RNG(uint64_t seed) : state(seed) {}
+
+    uint32_t random_u32() {
+        // xorshift rng
+        state ^= (state >> 12) & 0xFFFFFFFFFFFFFFFF;
+        state ^= (state << 25) & 0xFFFFFFFFFFFFFFFF;
+        state ^= (state >> 27) & 0xFFFFFFFFFFFFFFFF;
+        return static_cast<uint32_t>((state * 0x2545F4914F6CDD1D) >> 32);
+    }
+
+    float random() {
+        // random float32 in [0, 1)
+        return (random_u32() >> 8) / 16777216.0f;
+    }
+
+    float uniform(float a = 0.0f, float b = 1.0f) {
+        // random float32 in [a, b)
+        return a + (b - a) * random();
+    }
 };
 
 std::tuple<std::vector<std::pair<std::vector<double>, int>>, 
@@ -55,7 +60,7 @@ gen_data(RNG &random, int n = 100) {
 
     return std::make_tuple(tr, val, te);
 }
-
+RNG _random(42);
 // Value class for automatic differentiation
 class Value {
 public:
@@ -65,7 +70,7 @@ public:
     double grad;
     std::set<Value*> prev;
     std::string op;
-    std::function<void()> backward;
+    std::function<void(Value&)> backward;
 
 public:
     Value(double data, std::initializer_list<Value*> children = {}, const std::string& op = "")
@@ -73,7 +78,7 @@ public:
         for (auto child : children) {
             prev.insert(child);
         }
-        backward = [this]() { }; // Default backward function does nothing
+        backward = [this](Value&) { }; // Default backward function does nothing
     }
 
     Value(const Value& other): data(other.data), grad(other.grad), prev(other.prev), op(other.op), backward(other.backward){
@@ -82,7 +87,7 @@ public:
     Value pow(double other) {
         assert(("Supporting only int/float powers for now", std::floor(other) == other));
         Value out(std::pow(data, other), {this}, "**" + std::to_string(static_cast<int>(other)));
-        out.setBackward([this, other, &out]() {
+        out.setBackward([this, other](Value& out) {
             this->addGrad(other * std::pow(this->data, other - 1) * out.getGrad());
         });
         return out;
@@ -90,7 +95,7 @@ public:
 
     Value relu() {
         Value out(data < 0 ? 0 : data, {this}, "ReLU");
-        out.setBackward([this, &out]() {
+        out.setBackward([this](Value& out) {
             this->addGrad((out.getData() > 0) * out.getGrad());
         });
         return out;
@@ -98,7 +103,7 @@ public:
 
     Value tanh() {
         Value out(std::tanh(data), {this}, "tanh");
-        out.setBackward([this, &out]() {
+        out.setBackward([this](Value& out) {
             this->addGrad((1 - std::pow(out.getData(), 2)) * out.getGrad());
         });
         return out;
@@ -106,7 +111,7 @@ public:
 
     Value exp() {
         Value out(std::exp(data), {this}, "exp");
-        out.setBackward([this, &out]() {
+        out.setBackward([this](Value& out) {
             this->addGrad(std::exp(this->data) * out.getGrad());
         });
         return out;
@@ -114,7 +119,7 @@ public:
 
     Value log() {
         Value out(std::log(data), {this}, "log");
-        out.setBackward([this, &out]() {
+        out.setBackward([this](Value& out) {
             this->addGrad(1 / this->data * out.getGrad());
         });
         return out;
@@ -137,11 +142,11 @@ public:
 
         this->grad = 1; // seed the gradient
         for (auto it = topo.rbegin(); it != topo.rend(); ++it) {
-            (*it)->backward();
+            (*it)->backward(**it);
         }
     }
 
-    void setBackward(const std::function<void()>& func) {
+    void setBackward(const std::function<void(Value&)>& func) {
         backward = func;
     }
 
@@ -161,18 +166,38 @@ public:
         grad += g;
     }
 
+    Value& operator=(const Value& other) {
+        //std::cout << "call operator="  << std::endl;
+        if (this != &other) {
+            this->data = other.data;
+            this->grad = other.grad;
+            this->prev = other.prev;
+            this->op = other.op;
+            this->m = other.m;
+            this->v = other.v;
+            this->backward = other.backward;
+            
+        }
+       // std::cout << "this->data="<< this->data   << std::endl;
+        //        std::cout << "this->grad="<< this->grad   << std::endl;
+
+        return const_cast<Value&>(other);
+    }
+
     Value operator+(Value const& other) {
         Value out(data + other.data, {this, &const_cast<Value&>(other)}, "+");
-        out.setBackward([this, &out, &other]() {
+        out.setBackward([this,   &other](Value& out) {
             this->addGrad(out.getGrad());
             const_cast<Value&>(other).addGrad(out.getGrad());
         });
         return out;
     }
 
-    Value operator*(Value const& other) {
+    Value operator*(Value const& other)  {
         Value out(data * other.data, {this, &const_cast<Value&>(other)}, "*");
-        out.setBackward([this, &out, &other]() {
+        out.setBackward([this,   &other](Value& out) {
+            //std::cout << "Backward called for *" << std::endl;
+            //std::cout << "out.grad = " << out.grad << ", this->data = " << this->data << ", other.data = " << other.data << std::endl;
             this->addGrad(other.data * out.getGrad());
             const_cast<Value&>(other).addGrad(this->data * out.getGrad());
         });
@@ -181,7 +206,7 @@ public:
 
     Value operator-(Value const& other) {
         Value out(this->data - other.data, {this, &const_cast<Value&>(other)}, "-");
-        out.setBackward([this, &out, &other]() mutable {
+        out.setBackward([this,   &other](Value& out)   mutable {
             this->addGrad(1.0 * out.getGrad());
             const_cast<Value&>(other).addGrad(-1.0 * out.getGrad());
         });
@@ -191,7 +216,7 @@ public:
     Value operator/(Value const& other) {
         assert(other.data != 0 && "Division by zero!");
         Value out(this->data / other.data, {this, &const_cast<Value&>(other)}, "/");
-        out.setBackward([this, &out, &other]() mutable {
+        out.setBackward([this,   &other](Value& out)   mutable {
             this->addGrad((1.0 / other.data) * out.getGrad());
             const_cast<Value&>(other).addGrad(-(this->data / (other.data * other.data)) * out.getGrad());
         });
@@ -204,18 +229,19 @@ public:
 
     Value& operator+=(const Value& other) {
         // 创建this对象的副本，保存当前的状态
-        Value* originalThis = new Value(*this);
-        // 更新当前对象的数据
+        Value* originalThis = new Value(*this) ;
         this->data += other.data;
         this->op = "+=";
-        // 更新prev集合，保存this对象的原始状态
+
         this->prev.insert(originalThis);
         this->prev.insert(&const_cast<Value&>(other));
-        // 设置backward函数，以便正确计算梯度
-        this->backward = [this, originalThis, &other]() {
-            originalThis->grad += this->grad;  // 传递梯度给原始的this对象
-            const_cast<Value&>(other).grad += this->grad;          // 传递梯度给other对象
-        };
+        
+
+        this->setBackward([originalThis, &other](Value& out) {
+            originalThis->addGrad(out.getGrad());
+            const_cast<Value&>(other).addGrad(out.getGrad());
+        });
+        
         return *this;
     }
 
@@ -229,10 +255,10 @@ public:
         this->prev.insert(originalThis);
         this->prev.insert(&const_cast<Value&>(other));
         // 设置backward函数，以便正确计算梯度
-        this->backward = [this, originalThis, &other]() {
-            originalThis->grad += this->grad;  // 传递梯度给原始的this对象
-            const_cast<Value&>(other).grad -= this->grad;          // 传递负的梯度给other对象
-        };
+        this->setBackward([originalThis, &other](Value& out) {
+            originalThis->addGrad(out.getGrad());               // 传递梯度给原始的this对象
+            const_cast<Value&>(other).addGrad(-out.getGrad());  // 传递负的梯度给other对象
+        });
         return *this;
     }
     
@@ -246,9 +272,9 @@ public:
         this->prev.insert(originalThis);
         this->prev.insert(&const_cast<Value&>(other));
         // 设置backward函数，以便正确计算梯度
-        this->backward = [this, originalThis, &other]() {
-            originalThis->grad += other.data * this->grad;  // 传递乘积的梯度给原始的this对象
-            const_cast<Value&>(other).grad += originalThis->data * this->grad;  // 传递乘积的梯度给other对象
+        this->backward = [ originalThis, &other](Value& out) {
+            originalThis->grad += other.data * out.grad;  // 传递乘积的梯度给原始的this对象
+            const_cast<Value&>(other).grad += originalThis->data * out.grad;  // 传递乘积的梯度给other对象
         };
         return *this;
     }
@@ -263,9 +289,9 @@ public:
         this->prev.insert(originalThis);
         this->prev.insert(&const_cast<Value&>(other));
         // 设置backward函数，以便正确计算梯度
-        this->backward = [this, originalThis, &other]() {
-            originalThis->grad += (1 / other.data) * this->grad;  // 传递除法的梯度给原始的this对象
-            const_cast<Value&>(other).grad -= (originalThis->data / (other.data * other.data)) * this->grad;  // 传递除法的梯度给other对象
+        this->backward = [ originalThis, &other](Value& out) {
+            originalThis->grad += (1 / other.data) * out.grad;  // 传递除法的梯度给原始的this对象
+            const_cast<Value&>(other).grad -= (originalThis->data / (other.data * other.data)) * out.grad;  // 传递除法的梯度给other对象
         };
         return *this;
     }
@@ -278,7 +304,14 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Value& v) {
-        return os << "Value(data=" << v.data << ", grad=" << v.grad << ")";
+        os << "Value(data=" << v.data << ", grad=" << v.grad << ")";
+        
+        // // 打印children
+        // for (const auto& prevValue : v.prev) {
+        //     os << "    |<----Value(data=" << prevValue->data << ", grad=" << prevValue->grad << ") "<< std::endl;
+        // }
+        
+        return os;
     }
 };
 
@@ -305,14 +338,12 @@ private:
 
 public:
     Neuron(int nin, bool nonlin = true) : b(0), nonlin(nonlin) {
-        RNG random(42);
         for (int i = 0; i < nin; i++) {
-            w.emplace_back(Value(random.uniform(-1,1) / sqrt(nin)));
+            w.emplace_back(Value(_random.uniform(-1,1) / sqrt(nin)));
         }
     }
 
     Value operator()(const std::vector<Value> x) {
-        RNG random(42);
         Value act = b;
         for (size_t i = 0; i < w.size(); ++i) {
             act = act + w[i] * x[i];
@@ -439,17 +470,17 @@ double eval_split(MLP& model, const std::vector<std::pair<std::vector<double>, i
         std::vector<Value> inputs = { Value(x[0]), Value(x[1]) };
         std::vector<Value> logits = model(inputs);
         Value cer = cross_entropy(logits, y);
-        loss += cer;
+        loss = loss + cer;
     }
     loss = loss * (1.0 / split.size()); // 归一化损失
     return loss.getData();
 }
-
+ 
 
 int main() {
+ 
     // 数据生成
-    RNG random(42);
-    auto datasets = gen_data(random, 100);
+    auto datasets = gen_data(_random, 100);
     std::vector<std::pair<std::vector<double>, int>> train_split = std::get<0>(datasets);  // 数据集存储
     std::vector<std::pair<std::vector<double>, int>> val_split  = std::get<1>(datasets); // 数据集存储
     std::vector<std::pair<std::vector<double>, int>> test_split  = std::get<2>(datasets);
@@ -457,10 +488,11 @@ int main() {
     
     MLP model(2, {16, 3});
 
-    double learning_rate = 0.5;
+
+    double learning_rate = 1e-1;
     double beta1 = 0.9;
     double beta2 = 0.95;
-    double weight_decay = 0.0001;
+    double weight_decay = 1e-4;
 
     // 参数初始化
     for (auto* p : model.parameters()) {
@@ -469,7 +501,7 @@ int main() {
         p->v = 0.0;
     }
 
-    for (int step = 0; step < 2000; ++step) {
+    for (int step = 0; step < 1000; ++step) {
         if (step % 10 == 0) {
             // 验证集评估
             double val_loss = eval_split(model, val_split);
@@ -503,6 +535,8 @@ int main() {
 
         std::cout << "Step " << step << ", Train Loss: " << loss << std::endl;
     }
+ 
+
 
     return 0;
 }
